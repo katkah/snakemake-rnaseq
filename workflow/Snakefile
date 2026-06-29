@@ -1,0 +1,51 @@
+import os
+
+configfile: "config/config.yaml"
+
+if not os.path.exists("config/config.yaml"):
+    raise SystemExit(
+        "config/config.yaml not found.\n"
+        "Copy the template and fill in your paths:\n"
+        "  cp config/config.yaml.template config/config.yaml"
+    )
+
+
+include: "rules/common.smk"
+include: "rules/split.smk"
+include: "rules/sortmerna.smk"
+include: "rules/fastp.smk"
+include: "rules/join.smk"
+include: "rules/qc.smk"
+include: "rules/star.smk"
+include: "rules/rsem.smk"
+
+
+rule all:
+    input:
+        get_fastqc_outputs,
+        get_fastqc_trimmed_outputs,
+        f"{config['output_dir']}/multiqc/multiqc_report.html",
+        expand(
+            f"{config['output_dir']}/star/{{sample}}/{{sample}}Aligned.sortedByCoord.out.bam",
+            sample=SAMPLES,
+        ),
+        expand(
+            f"{config['output_dir']}/star/{{sample}}/{{sample}}Aligned.toTranscriptome.out.bam",
+            sample=SAMPLES,
+        ),
+        expand(
+            f"{config['output_dir']}/star/{{sample}}/{{sample}}ReadsPerGene.out.tab",
+            sample=SAMPLES,
+        ),
+        expand(
+            f"{config['output_dir']}/rsem/{{sample}}.genes.results", sample=SAMPLES
+        ),
+        expand(
+            f"{config['output_dir']}/rsem/{{sample}}.isoforms.results", sample=SAMPLES
+        ),
+
+
+rule preprocessing:
+    input:
+        get_fastqc_outputs,
+        get_fastqc_trimmed_outputs,

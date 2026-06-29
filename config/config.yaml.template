@@ -1,0 +1,92 @@
+# RNA-seq Snakemake Workflow Configuration
+# Copy this file to config/config.yaml and fill in your paths and parameters.
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Samples
+# ──────────────────────────────────────────────────────────────────────────────
+samples: "config/samples.tsv"
+
+# Number of chunks to split reads into before rRNA depletion and trimming.
+# More chunks = more parallelism but more overhead. 3 is a good default.
+chunks: ["001", "002", "003"]
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Reference genome and annotation
+# ──────────────────────────────────────────────────────────────────────────────
+reference:
+  genome_fasta: "/path/to/genome.fa.gz"
+  gtf: "/path/to/annotation.gtf"
+  star_index: "/path/to/star_index/"
+  rsem_index: "/path/to/rsem_index/"
+  rsem_index_name: "species_name"  # base name of RSEM index files (without extension)
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Output directories
+# ──────────────────────────────────────────────────────────────────────────────
+output_dir: "results"
+logs_dir: "logs"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Tool parameters
+# ──────────────────────────────────────────────────────────────────────────────
+
+fastqc:
+  threads: 8
+  mem_gb: 8
+
+sortmerna:
+  threads: 4
+  mem_gb: 50
+  # Path to the SortMeRNA rRNA database FASTA file.
+  database: "/path/to/smr_v4.3_default_db.fasta"
+  # --no-best: stop after the first passing alignment instead of finding the best one.
+  #            Safe for rRNA depletion — we only need to know IF a read is rRNA, not which
+  #            reference it matches best. Major speedup.
+  # --num_alignments 1: report only one alignment per read (consistent with --no-best).
+  extra_params: "--no-best --num_alignments 1"
+
+fastp:
+  threads: 8
+  mem_gb: 32
+  # Parameters applied to both paired-end and single-end data.
+  base_params: >-
+    --length_required 75
+    --cut_front
+    --cut_tail
+    --trim_poly_g
+  # Add any paired-end specific fastp flags here.
+  paired_params: ""
+  # Add any single-end specific fastp flags here.
+  single_params: ""
+
+multiqc:
+  mem_gb: 4
+
+star:
+  threads: 8
+  mem_gb: 32
+  # STAR parameters. These defaults are suitable for RSEM-based quantification.
+  # --quantTranscriptomeBan IndelSoftclipSingleend: removes alignments with indels or
+  #   soft-clips from the transcriptome BAM. Safe for both PE and SE data — the single-end
+  #   part of the flag only applies within PE mode (when readNmates==2) and is a no-op for SE.
+  extra_params: >-
+    --outSAMtype BAM SortedByCoordinate
+    --outFilterMultimapNmax 20
+    --outFilterMismatchNoverReadLmax 1.00
+    --outFilterMismatchNmax 999
+    --quantTranscriptomeBan IndelSoftclipSingleend
+    --quantMode TranscriptomeSAM GeneCounts
+    --readFilesCommand zcat
+
+rsem:
+  threads: 8
+  mem_gb: 48
+  # Strandedness of your library: none, forward, or reverse.
+  # Check your library prep kit documentation if unsure.
+  strandedness: "forward"
+  extra_params: >-
+    --alignments
+    --estimate-rspd
+    --no-bam-output
+    --calc-ci
+    --ci-memory 32000

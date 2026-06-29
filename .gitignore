@@ -1,0 +1,57 @@
+# Configuration (personal paths, never commit)
+config/config.yaml
+config/samples.tsv
+
+# Pipeline outputs
+results/
+logs/
+
+# Intermediate files (split chunks, shadow dirs)
+split/
+
+# Snakemake metadata
+.snakemake/
+
+# PBS job scripts and output logs (personal paths, job output)
+run_metacentrum.sh
+*.o[0-9]*
+*.e[0-9]*
+
+# Sequencing data
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.bam
+*.bam.bai
+*.sam
+*.cram
+
+# Genome and annotation files
+*.fa
+*.fa.gz
+*.fasta
+*.fasta.gz
+*.gtf
+*.gff
+*.gff3
+
+# Alignment indices (large, regenerated)
+star_index/
+rsem_index/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
