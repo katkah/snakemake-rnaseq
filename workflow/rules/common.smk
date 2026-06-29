@@ -3,7 +3,7 @@ import pandas as pd
 
 samples_df = pd.read_csv(config["samples"], sep="\t")
 SAMPLES = samples_df["sample"].tolist()
-CHUNKS = config["chunks"]
+CHUNKS = [f"{i:03d}" for i in range(1, config["chunks"] + 1)]
 
 
 def detect_data_type(df):

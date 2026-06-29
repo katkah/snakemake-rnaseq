@@ -8,7 +8,7 @@ samples: "config/samples.tsv"
 
 # Number of chunks to split reads into before rRNA depletion and trimming.
 # More chunks = more parallelism but more overhead. 3 is a good default.
-chunks: ["001", "002", "003"]
+chunks: 3
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Reference genome and annotation

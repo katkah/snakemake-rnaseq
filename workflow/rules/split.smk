@@ -6,7 +6,7 @@ rule split_reads_pe:
         expand("split/{{sample}}_2.part_{c}.fastq.gz", c=CHUNKS),
     threads: 1
     params:
-        n_chunks=len(CHUNKS),
+        n_chunks=config["chunks"],
     conda:
         "../envs/seqkit.yaml"
     shell:
@@ -23,7 +23,7 @@ rule split_reads_se:
         expand("split/{{sample}}.part_{c}.fastq.gz", c=CHUNKS),
     threads: 1
     params:
-        n_chunks=len(CHUNKS),
+        n_chunks=config["chunks"],
     conda:
         "../envs/seqkit.yaml"
     shell:
