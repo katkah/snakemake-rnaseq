@@ -1,9 +1,12 @@
+import os
 import pandas as pd
 
 
 samples_df = pd.read_csv(config["samples"], sep="\t")
 SAMPLES = samples_df["sample"].tolist()
 CHUNKS = [f"{i:03d}" for i in range(1, config["chunks"] + 1)]
+RSEM_IDX = os.path.join(config["reference"]["rsem_index"], config["reference"]["rsem_index_name"])
+STAR_IDX = config["reference"]["star_index"].rstrip("/")
 
 
 def detect_data_type(df):

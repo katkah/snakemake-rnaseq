@@ -1,8 +1,45 @@
+rule star_prepare_index:
+    input:
+        genome_fasta=config["reference"].get("genome_fasta", ""),
+        gtf=config["reference"]["gtf"],
+    output:
+        f"{STAR_IDX}/genomeParameters.txt",
+    log:
+        f"{config['logs_dir']}/star/prepare_index.log",
+    shadow:
+        "minimal"
+    threads: config["star"]["threads"]
+    resources:
+        mem_gb=config["star"]["mem_gb"],
+    params:
+        outdir=STAR_IDX,
+    conda:
+        "../envs/star.yaml"
+    shell:
+        """
+        mkdir -p {params.outdir}
+
+        if [[ {input.genome_fasta} == *.gz ]]; then
+            gunzip -c {input.genome_fasta} > genome.fa
+            GENOME_FILE=genome.fa
+        else
+            GENOME_FILE={input.genome_fasta}
+        fi
+
+        STAR --runMode genomeGenerate \
+             --genomeDir {params.outdir} \
+             --genomeFastaFiles $GENOME_FILE \
+             --sjdbGTFfile {input.gtf} \
+             --runThreadN {threads} \
+             2> {log}
+        """
+
+
 rule star_align_pe:
     input:
         fastq1=f"{config['output_dir']}/joined/{{sample}}_trimmed_R1.fastq.gz",
         fastq2=f"{config['output_dir']}/joined/{{sample}}_trimmed_R2.fastq.gz",
-        genome_dir=config["reference"]["star_index"],
+        genome_params=f"{STAR_IDX}/genomeParameters.txt",
         gtf=config["reference"]["gtf"],
     output:
         bam=f"{config['output_dir']}/star/{{sample}}/{{sample}}Aligned.sortedByCoord.out.bam",
@@ -19,13 +56,14 @@ rule star_align_pe:
         mem_gb=config["star"]["mem_gb"],
     params:
         outdir=f"{config['output_dir']}/star/{{sample}}",
+        genome_dir=STAR_IDX,
         extra=config["star"]["extra_params"],
     conda:
         "../envs/star.yaml"
     shell:
         """
         mkdir -p genome_index
-        cp -r {input.genome_dir}/* genome_index/
+        cp -r {params.genome_dir}/* genome_index/
         cp {input.gtf} .
 
         mkdir -p {params.outdir}
@@ -43,7 +81,7 @@ rule star_align_pe:
 rule star_align_se:
     input:
         fastq=f"{config['output_dir']}/joined/{{sample}}_trimmed.fastq.gz",
-        genome_dir=config["reference"]["star_index"],
+        genome_params=f"{STAR_IDX}/genomeParameters.txt",
         gtf=config["reference"]["gtf"],
     output:
         bam=f"{config['output_dir']}/star/{{sample}}/{{sample}}Aligned.sortedByCoord.out.bam",
@@ -60,13 +98,14 @@ rule star_align_se:
         mem_gb=config["star"]["mem_gb"],
     params:
         outdir=f"{config['output_dir']}/star/{{sample}}",
+        genome_dir=STAR_IDX,
         extra=config["star"]["extra_params"],
     conda:
         "../envs/star.yaml"
     shell:
         """
         mkdir -p genome_index
-        cp -r {input.genome_dir}/* genome_index/
+        cp -r {params.genome_dir}/* genome_index/
         cp {input.gtf} .
 
         mkdir -p {params.outdir}

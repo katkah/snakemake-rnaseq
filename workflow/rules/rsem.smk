@@ -1,15 +1,15 @@
 rule rsem_prepare_reference:
     input:
-        genome_fasta=config["reference"]["genome_fasta"],
+        genome_fasta=config["reference"].get("genome_fasta", ""),
         gtf=config["reference"]["gtf"],
     output:
-        seq=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}.seq",
-        grp=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}.grp",
-        ti=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}.ti",
-        idx_fa=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}.idx.fa",
-        transcripts_fa=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}.transcripts.fa",
-        chrlist=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}.chrlist",
-        n2g_idx_fa=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}.n2g.idx.fa",
+        seq=f"{RSEM_IDX}.seq",
+        grp=f"{RSEM_IDX}.grp",
+        ti=f"{RSEM_IDX}.ti",
+        idx_fa=f"{RSEM_IDX}.idx.fa",
+        transcripts_fa=f"{RSEM_IDX}.transcripts.fa",
+        chrlist=f"{RSEM_IDX}.chrlist",
+        n2g_idx_fa=f"{RSEM_IDX}.n2g.idx.fa",
     log:
         f"{config['logs_dir']}/rsem/prepare_reference.log",
     shadow:
@@ -19,7 +19,7 @@ rule rsem_prepare_reference:
         mem_gb=config["rsem"]["mem_gb"],
     params:
         index_dir=config["reference"]["rsem_index"],
-        index_prefix=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}",
+        index_prefix=RSEM_IDX,
     conda:
         "../envs/rsem.yaml"
     shell:
@@ -47,8 +47,8 @@ rule rsem_prepare_reference:
 rule rsem_quantify:
     input:
         bam=f"{config['output_dir']}/star/{{sample}}/{{sample}}Aligned.toTranscriptome.out.bam",
-        index_seq=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}.seq",
-        index_grp=f"{config['reference']['rsem_index']}/{config['reference']['rsem_index_name']}.grp",
+        index_seq=f"{RSEM_IDX}.seq",
+        index_grp=f"{RSEM_IDX}.grp",
     output:
         genes=f"{config['output_dir']}/rsem/{{sample}}.genes.results",
         isoforms=f"{config['output_dir']}/rsem/{{sample}}.isoforms.results",

@@ -14,6 +14,8 @@ chunks: 3
 # Reference genome and annotation
 # ──────────────────────────────────────────────────────────────────────────────
 reference:
+  # Required only if star_index or rsem_index do not exist yet.
+  # If both indices are already built, this can be omitted.
   genome_fasta: "/path/to/genome.fa.gz"
   gtf: "/path/to/annotation.gtf"
   star_index: "/path/to/star_index/"
