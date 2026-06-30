@@ -1,0 +1,61 @@
+name: Pipeline dry-run CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dry-run:
+    name: Snakemake dry-run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: snakemake
+          python-version: "3.11"
+
+      - name: Install Snakemake and pandas
+        shell: bash -l {0}
+        run: |
+          conda install -y -c bioconda -c conda-forge \
+            "snakemake-minimal>=9" \
+            "pandas>=2.0"
+
+      - name: Prepare config
+        run: cp config/config.test.yaml config/config.yaml
+
+      - name: Create dummy input files
+        run: |
+          mkdir -p test/data
+          touch test/data/sample1_1.fastq.gz
+          touch test/data/sample1_2.fastq.gz
+          touch test/data/genome.fa
+          touch test/data/annotation.gtf
+          touch test/data/smr_db.fasta
+
+      - name: Snakemake lint
+        continue-on-error: true
+        shell: bash -l {0}
+        run: |
+          snakemake \
+            --lint \
+            --snakefile workflow/Snakefile \
+            --configfile config/config.yaml
+
+      - name: Snakemake dry-run
+        shell: bash -l {0}
+        run: |
+          snakemake \
+            --dry-run \
+            --snakefile workflow/Snakefile \
+            --configfile config/config.yaml \
+            --cores 2 \
+            --quiet rules
