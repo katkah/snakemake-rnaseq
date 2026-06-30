@@ -18,6 +18,7 @@ include: "rules/join.smk"
 include: "rules/qc.smk"
 include: "rules/star.smk"
 include: "rules/rsem.smk"
+include: "rules/salmon.smk"
 
 
 rule all:
@@ -42,6 +43,12 @@ rule all:
         ),
         expand(
             f"{config['output_dir']}/rsem/{{sample}}.isoforms.results", sample=SAMPLES
+        ),
+        expand(
+            f"{config['output_dir']}/salmon/{{sample}}/quant.sf", sample=SAMPLES
+        ),
+        expand(
+            f"{config['output_dir']}/salmon/{{sample}}/quant.genes.sf", sample=SAMPLES
         ),
 
 

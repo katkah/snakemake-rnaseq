@@ -55,5 +55,10 @@ rsem:
     --alignments
     --estimate-rspd
     --no-bam-output
-    --calc-ci
-    --ci-memory 32000
+
+salmon:
+  threads: 1
+  mem_gb: 4
+  lib_type: "A"
+  bootstraps: 10
+  extra_params: ""
