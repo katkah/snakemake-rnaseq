@@ -1,0 +1,59 @@
+samples: "config/samples.test.tsv"
+chunks: 2
+
+reference:
+  genome_fasta: "test/data/genome.fa"
+  gtf: "test/data/annotation.gtf"
+  star_index: "test/data/star_index/"
+  rsem_index: "test/data/rsem_index/"
+  rsem_index_name: "test_species"
+
+output_dir: "test/results"
+logs_dir: "test/logs"
+
+fastqc:
+  threads: 1
+  mem_gb: 1
+
+sortmerna:
+  threads: 1
+  mem_gb: 4
+  database: "test/data/smr_db.fasta"
+  extra_params: "--no-best --num_alignments 1"
+
+fastp:
+  threads: 1
+  mem_gb: 4
+  base_params: >-
+    --length_required 75
+    --cut_front
+    --cut_tail
+    --trim_poly_g
+  paired_params: ""
+  single_params: ""
+
+multiqc:
+  mem_gb: 1
+
+star:
+  threads: 1
+  mem_gb: 4
+  extra_params: >-
+    --outSAMtype BAM SortedByCoordinate
+    --outFilterMultimapNmax 20
+    --outFilterMismatchNoverReadLmax 1.00
+    --outFilterMismatchNmax 999
+    --quantTranscriptomeBan IndelSoftclipSingleend
+    --quantMode TranscriptomeSAM GeneCounts
+    --readFilesCommand zcat
+
+rsem:
+  threads: 1
+  mem_gb: 4
+  strandedness: "forward"
+  extra_params: >-
+    --alignments
+    --estimate-rspd
+    --no-bam-output
+    --calc-ci
+    --ci-memory 32000
