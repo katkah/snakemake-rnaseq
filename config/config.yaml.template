@@ -18,6 +18,11 @@ reference:
   # If both indices are already built, this can be omitted.
   genome_fasta: "/path/to/genome.fa.gz"
   gtf: "/path/to/annotation.gtf"
+  # To build indices from scratch: point to a new empty directory.
+  # The pipeline will create it and build the index there.
+  # To reuse existing indices: point to the directory containing them.
+  # The pipeline checks for marker files (genomeParameters.txt for STAR,
+  # {rsem_index_name}.seq for RSEM) and skips building if they exist.
   star_index: "/path/to/star_index/"
   rsem_index: "/path/to/rsem_index/"
   rsem_index_name: "species_name"  # base name of RSEM index files (without extension)
