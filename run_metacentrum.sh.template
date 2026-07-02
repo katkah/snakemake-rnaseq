@@ -9,6 +9,12 @@ STORAGE="/storage/SITE/home/$USER"
 # Path to your Snakemake conda environment
 SNAKEMAKE_ENV="$STORAGE/my_envs/snakemake"
 
+# Path to this project's directory (contains config.yaml, samples.tsv, results/)
+PROJECT="/storage/SITE/home/$USER/rnaseq_data/PROJECT_NAME"
+
+# Path to the pipeline repository
+PIPELINE="/storage/SITE/home/$USER/snakemake-rnaseq"
+
 # Redirect conda package cache to shared storage before loading mambaforge
 # (must be set before module add to avoid writing to the read-only system cache)
 export CONDA_PKGS_DIRS="$STORAGE/tools/.conda/pkgs"
@@ -41,11 +47,12 @@ export TMPDIR=$SCRATCHDIR
 cd "$PBS_O_WORKDIR"
 
 snakemake \
-    --snakefile workflow/Snakefile \
-    --profile profiles/metacentrum \
+    --snakefile "$PIPELINE/workflow/Snakefile" \
+    --configfile "$PROJECT/config.yaml" \
+    --profile "$PIPELINE/profiles/metacentrum" \
     --conda-prefix "$STORAGE/.conda/snakemake-envs" \
     --shadow-prefix "$SCRATCHDIR"
 
 # MetaCentrum: fix permissions after the run so results are readable
 # regardless of which node accesses them afterwards
-chmod -R u+rwX "$PBS_O_WORKDIR"
+chmod -R u+rwX "$PROJECT"
