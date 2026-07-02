@@ -47,6 +47,7 @@ snakemake \
     --snakefile "$PIPELINE/workflow/Snakefile" \
     --configfile "$PROJECT/config.yaml" \
     --profile "$PIPELINE/profiles/metacentrum" \
+    --cores 32 \
     --conda-prefix "$STORAGE/.conda/snakemake-envs" \
     --shadow-prefix "$SCRATCHDIR"
 
