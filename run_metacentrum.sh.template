@@ -43,9 +43,6 @@ export MAMBA_EXE="$SNAKEMAKE_ENV/bin/mamba"
 
 export TMPDIR=$SCRATCHDIR
 
-# Move to the directory from which qsub was submitted
-cd "$PBS_O_WORKDIR"
-
 snakemake \
     --snakefile "$PIPELINE/workflow/Snakefile" \
     --configfile "$PROJECT/config.yaml" \
