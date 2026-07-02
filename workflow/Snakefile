@@ -1,13 +1,14 @@
 import os
 
-configfile: "config/config.yaml"
-
-if not os.path.exists("config/config.yaml"):
-    raise SystemExit(
-        "config/config.yaml not found.\n"
-        "Copy the template and fill in your paths:\n"
-        "  cp config/config.yaml.template config/config.yaml"
-    )
+if not config:
+    default_config = "config/config.yaml"
+    if not os.path.exists(default_config):
+        raise SystemExit(
+            "config/config.yaml not found.\n"
+            "Either pass --configfile /path/to/config.yaml or copy the template:\n"
+            "  cp config/config.yaml.template config/config.yaml"
+        )
+    configfile: default_config
 
 
 include: "rules/common.smk"
