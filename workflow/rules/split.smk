@@ -17,11 +17,13 @@ rule split_reads_pe:
         stem2=$(basename {input[1]} .fastq.gz)
         for f in split/${{stem1}}.part_*.fastq.gz; do
             suffix=${{f#split/${{stem1}}.}}
-            mv "$f" "split/{wildcards.sample}_1.${{suffix}}"
+            target="split/{wildcards.sample}_1.${{suffix}}"
+            [ "$f" != "$target" ] && mv "$f" "$target"
         done
         for f in split/${{stem2}}.part_*.fastq.gz; do
             suffix=${{f#split/${{stem2}}.}}
-            mv "$f" "split/{wildcards.sample}_2.${{suffix}}"
+            target="split/{wildcards.sample}_2.${{suffix}}"
+            [ "$f" != "$target" ] && mv "$f" "$target"
         done
         """
 
@@ -43,6 +45,7 @@ rule split_reads_se:
         stem=$(basename {input[0]} .fastq.gz)
         for f in split/${{stem}}.part_*.fastq.gz; do
             suffix=${{f#split/${{stem}}.}}
-            mv "$f" "split/{wildcards.sample}.${{suffix}}"
+            target="split/{wildcards.sample}.${{suffix}}"
+            [ "$f" != "$target" ] && mv "$f" "$target"
         done
         """
