@@ -21,10 +21,10 @@ rule fastqc_pe:
         fastqc -t {threads} -o {params.outdir} {input} 2> {log}
         stem1=$(basename {input[0]} .fastq.gz)
         stem2=$(basename {input[1]} .fastq.gz)
-        [ "{params.outdir}/${{stem1}}_fastqc.html" != "{output.html}" ] && mv {params.outdir}/${{stem1}}_fastqc.html {output.html}
-        [ "{params.outdir}/${{stem1}}_fastqc.zip" != "{output.zip}" ] && mv {params.outdir}/${{stem1}}_fastqc.zip {output.zip}
-        [ "{params.outdir}/${{stem2}}_fastqc.html" != "{output.html2}" ] && mv {params.outdir}/${{stem2}}_fastqc.html {output.html2}
-        [ "{params.outdir}/${{stem2}}_fastqc.zip" != "{output.zip2}" ] && mv {params.outdir}/${{stem2}}_fastqc.zip {output.zip2}
+        if [ "{params.outdir}/${{stem1}}_fastqc.html" != "{output.html}" ]; then mv {params.outdir}/${{stem1}}_fastqc.html {output.html}; fi
+        if [ "{params.outdir}/${{stem1}}_fastqc.zip" != "{output.zip}" ]; then mv {params.outdir}/${{stem1}}_fastqc.zip {output.zip}; fi
+        if [ "{params.outdir}/${{stem2}}_fastqc.html" != "{output.html2}" ]; then mv {params.outdir}/${{stem2}}_fastqc.html {output.html2}; fi
+        if [ "{params.outdir}/${{stem2}}_fastqc.zip" != "{output.zip2}" ]; then mv {params.outdir}/${{stem2}}_fastqc.zip {output.zip2}; fi
         """
 
 
@@ -48,8 +48,8 @@ rule fastqc_se:
         mkdir -p {params.outdir}
         fastqc -t {threads} -o {params.outdir} {input} 2> {log}
         stem=$(basename {input[0]} .fastq.gz)
-        [ "{params.outdir}/${{stem}}_fastqc.html" != "{output.html}" ] && mv {params.outdir}/${{stem}}_fastqc.html {output.html}
-        [ "{params.outdir}/${{stem}}_fastqc.zip" != "{output.zip}" ] && mv {params.outdir}/${{stem}}_fastqc.zip {output.zip}
+        if [ "{params.outdir}/${{stem}}_fastqc.html" != "{output.html}" ]; then mv {params.outdir}/${{stem}}_fastqc.html {output.html}; fi
+        if [ "{params.outdir}/${{stem}}_fastqc.zip" != "{output.zip}" ]; then mv {params.outdir}/${{stem}}_fastqc.zip {output.zip}; fi
         """
 
 
