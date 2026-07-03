@@ -48,8 +48,8 @@ rule fastqc_se:
         mkdir -p {params.outdir}
         fastqc -t {threads} -o {params.outdir} {input} 2> {log}
         stem=$(basename {input[0]} .fastq.gz)
-        mv {params.outdir}/${{stem}}_fastqc.html {output.html}
-        mv {params.outdir}/${{stem}}_fastqc.zip {output.zip}
+        [ "{params.outdir}/${{stem}}_fastqc.html" != "{output.html}" ] && mv {params.outdir}/${{stem}}_fastqc.html {output.html}
+        [ "{params.outdir}/${{stem}}_fastqc.zip" != "{output.zip}" ] && mv {params.outdir}/${{stem}}_fastqc.zip {output.zip}
         """
 
 
