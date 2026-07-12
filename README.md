@@ -187,3 +187,7 @@ mamba create --prefix "$STORAGE/my_envs/snakemake" \
 chmod -R u+rwX "$STORAGE/my_envs/snakemake"
 "$STORAGE/my_envs/snakemake/bin/conda" config --set channel_priority flexible
 ```
+
+## License
+
+Released under the [MIT License](LICENSE).
