@@ -2,8 +2,8 @@ rule split_reads_pe:
     input:
         get_copy_inputs,
     output:
-        expand("split/{{sample}}_1.part_{c}.fastq.gz", c=CHUNKS),
-        expand("split/{{sample}}_2.part_{c}.fastq.gz", c=CHUNKS),
+        temp(expand("split/{{sample}}_1.part_{c}.fastq.gz", c=CHUNKS)),
+        temp(expand("split/{{sample}}_2.part_{c}.fastq.gz", c=CHUNKS)),
     threads: 1
     params:
         n_chunks=config["chunks"],
@@ -32,7 +32,7 @@ rule split_reads_se:
     input:
         get_copy_inputs,
     output:
-        expand("split/{{sample}}.part_{c}.fastq.gz", c=CHUNKS),
+        temp(expand("split/{{sample}}.part_{c}.fastq.gz", c=CHUNKS)),
     threads: 1
     params:
         n_chunks=config["chunks"],

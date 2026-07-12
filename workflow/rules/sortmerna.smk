@@ -3,8 +3,8 @@ rule sortmerna_pe:
         r1="split/{sample}_1.part_{chunk}.fastq.gz",
         r2="split/{sample}_2.part_{chunk}.fastq.gz",
     output:
-        f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA_fwd.fq.gz",
-        f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA_rev.fq.gz",
+        temp(f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA_fwd.fq.gz"),
+        temp(f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA_rev.fq.gz"),
     log:
         f"{config['logs_dir']}/sortmerna/{{sample}}_{{chunk}}.log",
     shadow:
@@ -44,7 +44,7 @@ rule sortmerna_se:
     input:
         "split/{sample}.part_{chunk}.fastq.gz",
     output:
-        f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA.fq.gz",
+        temp(f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA.fq.gz"),
     log:
         f"{config['logs_dir']}/sortmerna/{{sample}}_{{chunk}}.log",
     shadow:

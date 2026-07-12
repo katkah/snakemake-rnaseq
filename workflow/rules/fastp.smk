@@ -3,8 +3,8 @@ rule fastp_pe:
         r1=f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA_fwd.fq.gz",
         r2=f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA_rev.fq.gz",
     output:
-        trimmed_r1=f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_trimmed_R1.fastq.gz",
-        trimmed_r2=f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_trimmed_R2.fastq.gz",
+        trimmed_r1=temp(f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_trimmed_R1.fastq.gz"),
+        trimmed_r2=temp(f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_trimmed_R2.fastq.gz"),
         html=f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_fastp.html",
         json=f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_fastp.json",
     log:
@@ -38,7 +38,7 @@ rule fastp_se:
     input:
         f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA.fq.gz",
     output:
-        trimmed=f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_trimmed.fastq.gz",
+        trimmed=temp(f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_trimmed.fastq.gz"),
         html=f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_fastp.html",
         json=f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_fastp.json",
     log:
