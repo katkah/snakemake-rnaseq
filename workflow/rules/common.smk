@@ -49,12 +49,19 @@ wildcard_constraints:
     sample="|".join(SAMPLES),
 
 
-# star_align_pe and star_align_se produce identical output paths — ruleorder
-# tells Snakemake which rule to prefer based on data type.
+# The _pe and _se variants of these rules share some output paths (STAR: all
+# outputs; fastp: the fastp.html/json QC reports; sortmerna: the _rRNA.log stats
+# file). When those shared files are requested directly — e.g. by the multiqc
+# rule — Snakemake cannot tell which variant to use, so ruleorder picks the one
+# matching the data type.
 if IS_PAIRED:
     ruleorder: star_align_pe > star_align_se
+    ruleorder: fastp_pe > fastp_se
+    ruleorder: sortmerna_pe > sortmerna_se
 else:
     ruleorder: star_align_se > star_align_pe
+    ruleorder: fastp_se > fastp_pe
+    ruleorder: sortmerna_se > sortmerna_pe
 
 
 def get_copy_inputs(wildcards):
