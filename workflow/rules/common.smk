@@ -43,8 +43,8 @@ print(
 
 
 # Constrain {sample} to known sample names to prevent the SE split pattern
-# (split/{sample}.part_{chunk}.fastq.gz) from matching PE filenames like
-# SRR001_1.part_001.fastq.gz with sample=SRR001_1.
+# ({output_dir}/split/{sample}.part_{chunk}.fastq.gz) from matching PE filenames
+# like SRR001_1.part_001.fastq.gz with sample=SRR001_1.
 wildcard_constraints:
     sample="|".join(SAMPLES),
 
