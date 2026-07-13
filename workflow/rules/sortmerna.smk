@@ -5,6 +5,7 @@ rule sortmerna_pe:
     output:
         temp(f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA_fwd.fq.gz"),
         temp(f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA_rev.fq.gz"),
+        stats=f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_rRNA.log",
     log:
         f"{config['logs_dir']}/sortmerna/{{sample}}_{{chunk}}.log",
     shadow:
@@ -37,6 +38,7 @@ rule sortmerna_pe:
 
         mv {params.prefix}_non_rRNA_fwd.fq.gz {config[output_dir]}/sortmerna/
         mv {params.prefix}_non_rRNA_rev.fq.gz {config[output_dir]}/sortmerna/
+        mv rRNA-reads.log {output.stats}
         """
 
 
@@ -45,6 +47,7 @@ rule sortmerna_se:
         "split/{sample}.part_{chunk}.fastq.gz",
     output:
         temp(f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_non_rRNA.fq.gz"),
+        stats=f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_rRNA.log",
     log:
         f"{config['logs_dir']}/sortmerna/{{sample}}_{{chunk}}.log",
     shadow:
@@ -75,4 +78,5 @@ rule sortmerna_se:
                   2> {log}
 
         mv {params.prefix}_non_rRNA.fq.gz {config[output_dir]}/sortmerna/
+        mv rRNA-reads.log {output.stats}
         """
