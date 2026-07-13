@@ -151,7 +151,9 @@ results/
     └── quant.genes.sf               # gene-level quantification
 ```
 
-STAR gene counts (`ReadsPerGene.out.tab`) can be used directly with DESeq2 or edgeR. Salmon bootstrap replicates enable uncertainty-aware differential expression via `tximport` + `fishpond`.
+### Downstream analysis
+
+The pipeline ends at quantification — differential expression is out of scope and left to you. These outputs are ready-made inputs for the usual tools: STAR gene counts (`ReadsPerGene.out.tab`) load directly into DESeq2 or edgeR, and Salmon's bootstrap replicates support uncertainty-aware DE via `tximport` + `fishpond`. No downstream scripts are bundled.
 
 ## Known limitations
 
