@@ -52,6 +52,9 @@ rule rsem_quantify:
     output:
         genes=f"{config['output_dir']}/rsem/{{sample}}.genes.results",
         isoforms=f"{config['output_dir']}/rsem/{{sample}}.isoforms.results",
+        # RSEM writes alignment stats here; declare it so shadow: minimal keeps
+        # it (MultiQC's rsem module reads .cnt for transcriptome alignment rates).
+        cnt=f"{config['output_dir']}/rsem/{{sample}}.stat/{{sample}}.cnt",
     log:
         f"{config['logs_dir']}/rsem/{{sample}}.log",
     shadow:

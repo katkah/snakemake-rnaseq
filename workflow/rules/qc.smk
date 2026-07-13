@@ -119,7 +119,7 @@ rule multiqc:
             sample=SAMPLES,
         ),
         rsem=expand(
-            f"{config['output_dir']}/rsem/{{sample}}.genes.results",
+            f"{config['output_dir']}/rsem/{{sample}}.stat/{{sample}}.cnt",
             sample=SAMPLES,
         ),
         salmon=expand(
