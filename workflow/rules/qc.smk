@@ -104,6 +104,28 @@ rule multiqc:
     input:
         raw_fastqc=get_fastqc_zip_outputs,
         trimmed_fastqc=get_fastqc_trimmed_zip_outputs,
+        fastp=expand(
+            f"{config['output_dir']}/fastp/{{sample}}_{{chunk}}_fastp.json",
+            sample=SAMPLES,
+            chunk=CHUNKS,
+        ),
+        sortmerna=expand(
+            f"{config['output_dir']}/sortmerna/{{sample}}_{{chunk}}_rRNA.log",
+            sample=SAMPLES,
+            chunk=CHUNKS,
+        ),
+        star=expand(
+            f"{config['output_dir']}/star/{{sample}}/{{sample}}Log.final.out",
+            sample=SAMPLES,
+        ),
+        rsem=expand(
+            f"{config['output_dir']}/rsem/{{sample}}.stat/{{sample}}.cnt",
+            sample=SAMPLES,
+        ),
+        salmon=expand(
+            f"{config['output_dir']}/salmon/{{sample}}/quant.sf",
+            sample=SAMPLES,
+        ),
     output:
         f"{config['output_dir']}/multiqc/multiqc_report.html",
     log:
@@ -111,12 +133,11 @@ rule multiqc:
     resources:
         mem_gb=config["multiqc"]["mem_gb"],
     params:
-        raw_indir=f"{config['output_dir']}/fastqc",
-        trimmed_indir=f"{config['output_dir']}/fastqc_trimmed",
+        scan_dir=config["output_dir"],
         outdir=f"{config['output_dir']}/multiqc",
     conda:
         "../envs/multiqc.yaml"
     shell:
         """
-        multiqc --force {params.raw_indir} {params.trimmed_indir} -o {params.outdir} 2> {log}
+        multiqc --force {params.scan_dir} -o {params.outdir} 2> {log}
         """
