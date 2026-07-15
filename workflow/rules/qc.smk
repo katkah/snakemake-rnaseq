@@ -100,6 +100,24 @@ rule fastqc_trimmed_se:
         """
 
 
+rule transcriptome_usage:
+    input:
+        star=expand(
+            f"{config['output_dir']}/star/{{sample}}/{{sample}}Log.final.out",
+            sample=SAMPLES,
+        ),
+        cnt=expand(
+            f"{config['output_dir']}/rsem/{{sample}}.stat/{{sample}}.cnt",
+            sample=SAMPLES,
+        ),
+    output:
+        f"{config['output_dir']}/transcriptome_usage/transcriptome_usage_mqc.tsv",
+    params:
+        samples=SAMPLES,
+    script:
+        "../scripts/transcriptome_usage.py"
+
+
 rule multiqc:
     input:
         raw_fastqc=get_fastqc_zip_outputs,
@@ -126,6 +144,7 @@ rule multiqc:
             f"{config['output_dir']}/salmon/{{sample}}/quant.sf",
             sample=SAMPLES,
         ),
+        usage=f"{config['output_dir']}/transcriptome_usage/transcriptome_usage_mqc.tsv",
     output:
         f"{config['output_dir']}/multiqc/multiqc_report.html",
     log:
