@@ -43,9 +43,50 @@ export MAMBA_EXE="$SNAKEMAKE_ENV/bin/mamba"
 
 export TMPDIR=$SCRATCHDIR
 
+# ── Stage reference indices to node-local scratch (when already built) ────────
+# WHY: on MetaCentrum the persistent index lives on shared /storage (network),
+# but each PBS job gets a fast node-local scratch SSD ($SCRATCHDIR). STAR and RSEM
+# only READ the index, so — once it exists — we copy it to scratch once here and
+# let every alignment/quant job read from local disk instead of the network.
+# Keeping this in the wrapper keeps the workflow portable: the rules just read the
+# configured index path, so a laptop run reads it in place. Index paths come from
+# config.yaml (single source of truth); PyYAML is importable via the Snakemake env.
+#
+# If an index is not built yet, staging is skipped and Snakemake builds it on
+# /storage during this run; later runs then detect it and stage the built copy.
+#
+# NOTE: for a LARGE genome (e.g. human/mouse) the index takes a long time to build
+# and, on the first run, that build happens on /storage over the network. Consider
+# building the indices beforehand as a one-time step, so your analysis runs never
+# pay that cost and benefit from scratch staging from the very first run.
+STAR_INDEX_SRC=$(python -c "import yaml; print(yaml.safe_load(open('$PROJECT/config.yaml'))['reference']['star_index'])")
+RSEM_INDEX_SRC=$(python -c "import yaml; print(yaml.safe_load(open('$PROJECT/config.yaml'))['reference']['rsem_index'])")
+RSEM_NAME=$(python -c "import yaml; print(yaml.safe_load(open('$PROJECT/config.yaml'))['reference']['rsem_index_name'])")
+
+CONFIG_FILES=("$PROJECT/config.yaml")
+if [[ -f "$STAR_INDEX_SRC/genomeParameters.txt" && -f "$RSEM_INDEX_SRC/$RSEM_NAME.seq" ]]; then
+    echo "Reference indices found — staging to node-local scratch."
+    mkdir -p "$SCRATCHDIR/star_index" "$SCRATCHDIR/rsem_index"
+    # Fail fast on a bad copy (interrupted, scratch full) instead of running
+    # Snakemake against a half-staged index. Scratch is wiped at job end, so a
+    # failed stage does no lasting harm — just resubmit.
+    cp -r "$STAR_INDEX_SRC"/* "$SCRATCHDIR/star_index/" || { echo "ERROR: staging STAR index to scratch failed"; exit 1; }
+    cp -r "$RSEM_INDEX_SRC"/* "$SCRATCHDIR/rsem_index/" || { echo "ERROR: staging RSEM index to scratch failed"; exit 1; }
+    # Override only the two index paths; deep-merged over config.yaml (later wins),
+    # so gtf, rsem_index_name, and everything else are preserved.
+    cat > "$SCRATCHDIR/scratch_indices.yaml" <<EOF
+reference:
+  star_index: "$SCRATCHDIR/star_index/"
+  rsem_index: "$SCRATCHDIR/rsem_index/"
+EOF
+    CONFIG_FILES+=("$SCRATCHDIR/scratch_indices.yaml")
+else
+    echo "Reference indices not built yet — building on /storage this run (no staging)."
+fi
+
 snakemake \
     --snakefile "$PIPELINE/workflow/Snakefile" \
-    --configfile "$PROJECT/config.yaml" \
+    --configfile "${CONFIG_FILES[@]}" \
     --profile "$PIPELINE/profiles/metacentrum" \
     --cores 32 \
     --conda-prefix "$STORAGE/.conda/snakemake-envs" \

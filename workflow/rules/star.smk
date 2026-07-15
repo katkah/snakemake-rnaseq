@@ -61,13 +61,10 @@ rule star_align_pe:
         "../envs/star.yaml"
     shell:
         """
-        mkdir -p genome_index
-        cp -r {params.genome_dir}/* genome_index/
-
         mkdir -p {params.outdir}
 
         STAR --runThreadN {threads} \
-            --genomeDir genome_index \
+            --genomeDir {params.genome_dir} \
             --readFilesIn {input.fastq1} {input.fastq2} \
             --outFileNamePrefix {params.outdir}/{wildcards.sample} \
             {params.extra} \
@@ -100,13 +97,10 @@ rule star_align_se:
         "../envs/star.yaml"
     shell:
         """
-        mkdir -p genome_index
-        cp -r {params.genome_dir}/* genome_index/
-
         mkdir -p {params.outdir}
 
         STAR --runThreadN {threads} \
-            --genomeDir genome_index \
+            --genomeDir {params.genome_dir} \
             --readFilesIn {input.fastq} \
             --outFileNamePrefix {params.outdir}/{wildcards.sample} \
             {params.extra} \

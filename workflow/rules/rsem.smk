@@ -74,9 +74,6 @@ rule rsem_quantify:
         "../envs/rsem.yaml"
     shell:
         """
-        mkdir -p rsem_index
-        cp {params.index_dir}/* rsem_index/
-
         mkdir -p {params.outdir}
 
         rsem-calculate-expression -p {threads} \
@@ -84,5 +81,5 @@ rule rsem_quantify:
             --seed {params.seed} \
             --strandedness {params.strandedness} \
             {params.extra} \
-            {input.bam} rsem_index/{params.index_name} {params.outdir}/{wildcards.sample} 2> {log}
+            {input.bam} {params.index_dir}/{params.index_name} {params.outdir}/{wildcards.sample} 2> {log}
         """
